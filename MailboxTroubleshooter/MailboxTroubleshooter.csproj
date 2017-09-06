@@ -7,8 +7,8 @@
     <ProjectGuid>{08F22386-8D24-47BA-83DE-A15F4D5593BF}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MyPowershellModule</RootNamespace>
-    <AssemblyName>MyPowershellModule</AssemblyName>
+    <RootNamespace>MailboxTroubleshooter</RootNamespace>
+    <AssemblyName>MailboxTroubleshooter</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Management.Automation;
 using System.Collections.ObjectModel;
 
-namespace MyPowershellModule
+namespace MailboxTroubleshooter
 {
     [Cmdlet(VerbsCommon.Get, "MyMailbox")]
     class GetMyMailbox : Cmdlet
