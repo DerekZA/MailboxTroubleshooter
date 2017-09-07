@@ -4,35 +4,38 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Management.Automation;
-using System.Management.Automation.Runspaces;
-using System.Management.Automation.Host;
 using System.Collections.ObjectModel;
 
 namespace MailboxTroubleshooter
 {
+    /// <summary>
+    /// <para type="synopsis">Find the Status of a mailbox within the Database Mailbox table</para>
+    /// <para type="description">This cmdlet uses StoreQuery to extract the Mailbox Status from within a given Database's mailbox table, this can be useful for troubleshooting.</para>
+    /// </summary>
     [Cmdlet(VerbsCommon.Get, "MailboxStatus")]
     public class GetMailboxStatus : Cmdlet
     {
+        /// <summary>
+        /// <para type="description">The MailboxGuid of the user</para>
+        /// </summary>
         [Parameter(Mandatory = true, Position = 0, HelpMessage = "Provide a users MailboxGuid value")]
         public string MailboxGuid;
 
+        /// <summary>
+        /// <para type="description">The Database where the users mailbox resides</para>
+        /// </summary>
         [Parameter(Mandatory = true, Position = 1, HelpMessage = "Provide a database")]
         public string Database;
 
+        /// <summary>
+        /// Use to perform pre-cmdlet execution tasks such as import modules or validate data before processing
+        /// </summary>
         protected override void BeginProcessing() //Used for initializing resources
         {
             try
             {
 
                 ValidateParameters(); //We want to validate our parameters are set
-
-                PowerShell importScripts = PowerShell.Create(RunspaceMode.CurrentRunspace);
-
-                //Import the the PS1 allowing us to expose the Get-StoreQuery cmdlet
-                string script = @".\ManagedStoreDiagnosticFunctions.ps1";
-                importScripts.AddScript(script);
-                var results = importScripts.Invoke();
-                WriteObject(results);
             }
             catch (Exception)
             {
@@ -40,6 +43,9 @@ namespace MailboxTroubleshooter
             }
         }
 
+        /// <summary>
+        /// Calls the Cmdlet
+        /// </summary>
         protected override void ProcessRecord()
         {
             try
@@ -126,12 +132,19 @@ namespace MailboxTroubleshooter
             }
         }
 
-        protected override void EndProcessing() //Executes after Begin Processing
+
+        /// <summary>
+        /// Called after ProcessRecord completes
+        /// </summary>
+        protected override void EndProcessing()
         {
 
         }
 
-        protected override void StopProcessing() //Called when your cmdlet execution is interrupted. Use to clean up resources
+        /// <summary>
+        /// Called if the ProcessRecord is interupted by the user, use to cleanup resources such as DB connections etc
+        /// </summary>
+        protected override void StopProcessing()
         {
         }
 
