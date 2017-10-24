@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Management.Automation;
 using System.Collections.ObjectModel;
 
@@ -34,7 +31,6 @@ namespace MailboxTroubleshooter
         {
             try
             {
-
                 ValidateParameters(); //We want to validate our parameters are set
             }
             catch (Exception)
@@ -50,47 +46,47 @@ namespace MailboxTroubleshooter
         {
             try
             {
-                PowerShell myfirstPowerShell = PowerShell.Create(RunspaceMode.CurrentRunspace);
-                string query = String.Format("select * from [{0}].Mailbox where MailboxGuid = '{1}'", this.Database, this.MailboxGuid);
+                PowerShell ps = PowerShell.Create(RunspaceMode.CurrentRunspace);
+                string query = String.Format("select * from [{0}].Mailbox where MailboxGuid = '{1}'", Database, MailboxGuid);
 
                 // We add the command we want to run.
                 // More information on the PowerShell.AddCommand method can be found here: https://msdn.microsoft.com/en-us/library/dd182430(v=vs.85).aspx
-                myfirstPowerShell.AddCommand("Get-StoreQuery");
+                ps.AddCommand("Get-StoreQuery");
 
                 // We add the parameter that we want to specify.
                 // More information on the PowerShell.AddParameter method can be found here: https://msdn.microsoft.com/en-us/library/dd182434(v=vs.85).aspx
 
-                myfirstPowerShell.AddParameter("Database", this.Database).AddArgument(query);
+                ps.AddParameter("Database", Database).AddArgument(query);
 
                 // We add the command we want to run.
                 // More information on the PowerShell.AddCommand method can be found here: https://msdn.microsoft.com/en-us/library/dd182430(v=vs.85).aspx
-                myfirstPowerShell.AddCommand("Select-Object");
+                ps.AddCommand("Select-Object");
 
                 // We select the specific property we want to return.
                 // More information on the PowerShell.AddParameter method can be found here: https://msdn.microsoft.com/en-us/library/dd182434(v=vs.85).aspx
-                myfirstPowerShell.AddParameter("Property", new string[] { "MailboxGuid", "DisplayName", "DeletedOn", "Status" });
+                ps.AddParameter("Property", new string[] { "MailboxGuid", "DisplayName", "DeletedOn", "Status" });
 
                 //Invoke the Powershell Cmdlet and store in a collection
-                Collection<PSObject> resultsCollection = myfirstPowerShell.Invoke();
+                Collection<PSObject> resultsCollection = ps.Invoke();
 
                 //Store results from the collection into a PSObject so we can output to the pipeline
-                PSObject myFirstPsObject = resultsCollection.FirstOrDefault();
+                PSObject psObject = resultsCollection.FirstOrDefault();
 
                 //Check if we have have results
-                if (myFirstPsObject != null)
+                if (psObject != null)
                 {
                     //We setup a new PSObject to hold values we're interested in
                     PSObject psObj = new PSObject();
 
-                    psObj.Members.Add(new PSNoteProperty("DisplayName", myFirstPsObject.Members["DisplayName"].Value.ToString()));
-                    psObj.Members.Add(new PSNoteProperty("MailboxGuid", myFirstPsObject.Members["MailboxGuid"].Value.ToString()));
-                    psObj.Members.Add(new PSNoteProperty("DeletedOn", myFirstPsObject.Members["DeletedOn"].Value.ToString()));
+                    psObj.Members.Add(new PSNoteProperty("DisplayName", psObject.Members["DisplayName"].Value.ToString()));
+                    psObj.Members.Add(new PSNoteProperty("MailboxGuid", psObject.Members["MailboxGuid"].Value.ToString()));
+                    psObj.Members.Add(new PSNoteProperty("DeletedOn", psObject.Members["DeletedOn"].Value.ToString()));
 
                     //Lets get the value of the Mailbox Status and store as an Int
-                    int MailboxStatus = Int32.Parse(myFirstPsObject.Members["Status"].Value.ToString());
+                    int mailboxStatus = Int32.Parse(psObject.Members["Status"].Value.ToString());
 
                     //Based on the value of Mailbox Status we add the corresponding readable information to the PSObject.
-                    switch (MailboxStatus)
+                    switch (mailboxStatus)
                     {
                         case 0:
                             psObj.Members.Add(new PSNoteProperty("Status", "Invalid"));
