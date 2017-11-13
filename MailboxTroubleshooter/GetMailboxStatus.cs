@@ -2,6 +2,9 @@
 using System.Linq;
 using System.Management.Automation;
 using System.Collections.ObjectModel;
+using System.Configuration;
+using System.Management.Automation.Runspaces;
+using Microsoft.Win32;
 
 namespace MailboxTroubleshooter
 {
@@ -32,6 +35,21 @@ namespace MailboxTroubleshooter
             try
             {
                 ValidateParameters(); //We want to validate our parameters are set
+
+                // We want to access the current Powershell Runspace
+                PowerShell importPowerShell = PowerShell.Create(RunspaceMode.CurrentRunspace);
+
+                // Here we import the module we need in order to execute StoreQuery into the existing runspace
+                // More information on the PowerShell.AddCommand method can be found here: https://msdn.microsoft.com/en-us/library/dd182430(v=vs.85).aspx
+
+                importPowerShell.AddCommand("Import-Module").AddArgument(GetModulePath());
+
+                importPowerShell.Invoke();
+            }
+
+            catch (CommandNotFoundException ex)
+            {
+                WriteObject(ex.Message);
             }
             catch (Exception)
             {
@@ -163,6 +181,34 @@ namespace MailboxTroubleshooter
                 throw;
             }
         }
+
+        private string GetModulePath()
+        {
+            try
+            {
+                // We want to access the current Powershell Runspace
+                PowerShell importPowerShell = PowerShell.Create(RunspaceMode.CurrentRunspace);
+
+                importPowerShell.AddCommand("Get-Variable").AddArgument("exinstall");
+
+                Collection<PSObject> results = importPowerShell.Invoke();
+
+                //Store results from the collection into a PSObject so we can output to the pipeline
+                PSObject psObject = results.FirstOrDefault();
+                string installDir = psObject.Members["Value"].Value.ToString();
+
+                string value = installDir + "Scripts" + @"\ManagedStoreDiagnosticFunctions.ps1";
+
+                return value;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+
+        }
+
         private void ThrowParameterError(string parameterName)
         {
             ThrowTerminatingError(
