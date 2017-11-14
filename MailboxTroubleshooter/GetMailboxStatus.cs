@@ -12,9 +12,35 @@ namespace MailboxTroubleshooter
     /// <para type="synopsis">Find the Status of a mailbox within the Database Mailbox table</para>
     /// <para type="description">This cmdlet uses StoreQuery to extract the Mailbox Status from within a given Database's mailbox table, this can be useful for troubleshooting.</para>
     /// </summary>
+    /// 
+    /// <example>
+    ///   <code>
+    ///   This example shows the mailbox status of a MailboxGuid on Database01
+    /// 
+    ///   Get-MailboxStatus -MailboxGuid 6366e470-fa5e-4e29-bb69-aa908eed9e6c -Database Database01
+    /// 
+    ///   Status         DeletedOn DisplayName    MailboxGuid
+    ///   ------         --------- -----------    -----------
+    ///   UserAccessible NULL      Derek Anderson 6366e470-fa5e-4e29-bb69-aa908eed9e6c
+    ///   </code>
+    /// </example>
+    /// <example>
+    ///   <code>
+    ///   This example shows the mailbox status of a DisplayName 'Derek Anderson' on Database01
+    /// 
+    ///   Get-MailboxStatus -DisplayName "Derek Anderson" -Database Database01
+    /// 
+    ///   Status         DeletedOn DisplayName    MailboxGuid
+    ///   ------         --------- -----------    -----------
+    ///   UserAccessible NULL      Derek Anderson 6366e470-fa5e-4e29-bb69-aa908eed9e6c
+    ///   </code>
+    /// </example>
+
     [Cmdlet(VerbsCommon.Get, "MailboxStatus")]
     public class GetMailboxStatus : Cmdlet
     {
+
+
         /// <summary>
         /// <para type="description">The MailboxGuid of the user</para>
         /// </summary>
